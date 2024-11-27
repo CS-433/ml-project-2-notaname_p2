@@ -2,6 +2,8 @@
 import numpy as np
 
 
+
+
 def rotate_train_data(imgs, gt_imgs):
     # Rotate the data by the given angle
     augmented_imgs = []
