@@ -3,7 +3,7 @@ import pandas as pd
 
 import torch
 
-from torch.nn.functional import relu
+from torch.nn.functional import relu, tanh, leaky_relu, silu
 
 from torch.utils.data import Dataset
 
@@ -21,21 +21,20 @@ class Conv_test(torch.nn.Module):
         (e.g., {'out_channels': 16, 'kernel_size': 3, 'stride': 1, 'padding': 1}).
     """
 
-    def __init__(self, in_channels, list_conv_param, skip_list=None, skip_targets = None):
+    def __init__(self, in_channels, list_conv_param, skip_list_C=None, skip_targets_C = None):
         super(Conv_test, self).__init__()
-        self.in_channels = in_channels
 
         self.conv_list = torch.nn.ModuleList()
         self.batchnorm_list = torch.nn.ModuleList()
-        self.skip_list = skip_list if skip_list is not None else []
-        self.skip_targets = skip_targets if skip_targets is not None else []
 
-        assert len(self.skip_list) == len(self.skip_targets)
+        self.skip_list_C = skip_list_C if skip_list_C is not None else []
+        self.skip_targets_C = skip_targets_C if skip_targets_C is not None else []
+        skip_insize_C = []
+        self.adjusting_layer = torch.nn.ModuleList()
 
-        self.skip_proj = torch.nn.ModuleList()
+        assert len(self.skip_list_C) == len(self.skip_targets_C)
 
-        if self.skip_list is not None:
-            self.skip_connect = torch.nn.ModuleList()
+        skip_count = 0
 
         for i, conv_params in enumerate(list_conv_param):
     
@@ -43,11 +42,16 @@ class Conv_test(torch.nn.Module):
             self.conv_list.append(conv_layer)
 
             out_channels = conv_params["out_channels"]
+
+            if i in self.skip_list_C:
+                skip_insize_C.append(out_channels)
+
+            if i in self.skip_targets_C:
+                self.adjusting_layer.append(torch.nn.Conv2d(in_channels=skip_insize_C[skip_count], out_channels=out_channels, kernel_size=1, stride=1))
+                skip_count += 1
+
             batchnorm_layer = torch.nn.BatchNorm2d(out_channels)
             self.batchnorm_list.append(batchnorm_layer)
-            
-            if i in self.skip_targets:
-                self.skip_proj.append(torch.nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1))
 
             in_channels = out_channels
 
@@ -57,25 +61,22 @@ class Conv_test(torch.nn.Module):
 
     def forward(self, x):
 
-        skip_outputs = {}
+        indentity = None
+        skip_count = 0
 
         for i, (conv_layer, batchnorm_layer) in enumerate(zip(self.conv_list, self.batchnorm_list)):
             x = conv_layer(x)
+
+            if i in self.skip_list_C:
+                identity = x
+
+            if i in self.skip_targets_C:
+                x = x + self.adjusting_layer[skip_count](identity)
+                skip_count += 1
+
             x = batchnorm_layer(x)
-            x = relu(x)
-
-            if i in self.skip_list:
-                skip_outputs[i] = x
-
-            if i in self.skip_targets:
-                skip_index = self.skip_targets.index(i)
-                skip_source = self.skip_list[skip_index]
-
-                skip_out = skip_outputs[skip_source]
-                if skip_out.shape != x.shape:
-                    skip_out = self.skip_proj[skip_index](skip_out)
-
-                x = x + skip_out
+            x = silu(x)
+        
 
         x = self.output_layer(x)
         x = torch.squeeze(x)
