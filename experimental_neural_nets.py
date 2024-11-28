@@ -87,8 +87,8 @@ class Conv_test(torch.nn.Module):
 class Road_data(Dataset):
     def __init__(self, images, labels):
         # necessary to convert numpy style images to tensor style images 
-        images = [torch.tensor(image).permute(2, 0, 1) for image in images]
-        labels = [torch.tensor(label) for label in labels]
+        images = [torch.tensor(np.ascontiguousarray(image)).permute(2, 0, 1).contiguous() for image in images]
+        labels = [torch.tensor(np.ascontiguousarray(label)).contiguous() for label in labels]
         
         self.images = images  
         self.labels = labels  
