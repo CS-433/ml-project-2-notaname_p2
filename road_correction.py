@@ -17,20 +17,16 @@ def remove_false_positives(binary_mask, min_aspect_ratio=2.5):
         major_axis = region.major_axis_length
         minor_axis = region.minor_axis_length
         
-        if minor_axis == 0 or major_axis == 0:
+        if minor_axis == 0:
             aspect_ratio = 1  # Prevent division by zero
         else:
-            # Compute aspect ratios in both directions: max(width)/min(length) and max(length)/min(width)
-            aspect_ratio_1 = max(major_axis, minor_axis) / min(major_axis, minor_axis)
-            aspect_ratio_2 = max(minor_axis, major_axis) / min(minor_axis, major_axis)
+            aspect_ratio = major_axis / minor_axis
 
-        # Retain components if either aspect ratio meets the threshold
-        if aspect_ratio_1 >= min_aspect_ratio or aspect_ratio_2 >= min_aspect_ratio:
+        # Retain components with a high aspect ratio (long and narrow objects)
+        if aspect_ratio >= min_aspect_ratio:
             filtered_mask[labeled_mask == region.label] = True
 
     return filtered_mask
-
-
 
 
 def process_roads(raw_map, threshold=0.5, min_size=50, min_aspect_ratio=2.5, outlier_size=20):
