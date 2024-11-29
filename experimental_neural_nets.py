@@ -59,6 +59,27 @@ class Conv_test(torch.nn.Module):
             in_channels=in_channels, out_channels=1, kernel_size=1
         )
 
+        self.initialize_weights()
+
+    def initialize_weights(self):
+        """Initialize weights non-randomly."""
+        for layer in self.conv_list:
+            if isinstance(layer, torch.nn.Conv2d):
+                torch.nn.init.constant_(layer.weight, 0.1)
+                if layer.bias is not None:
+                    torch.nn.init.constant_(layer.bias, 0.0)
+        
+        for layer in self.adjusting_layer:
+            if isinstance(layer, torch.nn.Conv2d):
+                torch.nn.init.constant_(layer.weight, 0.2)
+                if layer.bias is not None:
+                    torch.nn.init.constant_(layer.bias, 0.0)
+
+        if isinstance(self.output_layer, torch.nn.Conv2d):
+            torch.nn.init.constant_(self.output_layer.weight, 0.3) 
+            if self.output_layer.bias is not None:
+                torch.nn.init.constant_(self.output_layer.bias, 0.0)
+
     def forward(self, x):
 
         indentity = None
