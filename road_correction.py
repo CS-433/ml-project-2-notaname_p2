@@ -83,7 +83,7 @@ def process_roads(raw_map, threshold=0.05, outlier_size=50, shape_size=5, min_as
         plt.tight_layout()
         plt.show()
 
-    return filtered_map
+    return filtered_map, filled_map,cleaned_mask, binary_road_map
 
 def f1_loss_numpy(predictions, targets, epsilon=1e-7):
     """
