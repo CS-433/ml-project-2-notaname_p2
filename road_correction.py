@@ -64,7 +64,7 @@ def process_roads(raw_map, threshold=0.05, outlier_size=50, shape_size=5, min_as
     filtered_map = remove_false_positives(filled_map, min_aspect_ratio=min_aspect_ratio)
     
     if display:
-        fig, axes = plt.subplots(1, 5, figsize=(15, 5))
+        fig, axes = plt.subplots(1, 4, figsize=(15, 5))
         axes[0].imshow(binary_road_map, cmap='gray')
         axes[0].set_title("Binary Map")
         axes[0].axis('off')
@@ -77,9 +77,6 @@ def process_roads(raw_map, threshold=0.05, outlier_size=50, shape_size=5, min_as
         axes[3].imshow(filtered_map, cmap='gray')
         axes[3].set_title("After False Positive Removal")
         axes[3].axis('off')
-        axes[4].imshow(final_map, cmap='gray')
-        axes[4].set_title("Final Map After Outlier Removal")
-        axes[4].axis('off')
         plt.tight_layout()
         plt.show()
 
