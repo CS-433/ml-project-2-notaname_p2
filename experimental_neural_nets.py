@@ -7,6 +7,21 @@ from torch.nn.functional import relu, tanh, leaky_relu, silu
 
 from torch.utils.data import Dataset
 
+
+def set_seed(seed):
+    """
+    Set random seed for reproducibility.
+
+    Parameters:
+    ----------
+    seed : int
+        Random seed.
+    """
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
 class Conv_test(torch.nn.Module):
     """
     A convolutional model with multiple Conv2D and BatchNorm2D layers.
