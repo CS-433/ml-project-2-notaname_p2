@@ -11,11 +11,18 @@ import torch
 
 
 def load_image(infilename):
+    """ Loads an image from a file into a NumPy array
+    """
     data = mpimg.imread(infilename)
     return data
 
 
 def img_float_to_uint8(img):
+    """ Converts an image (floating-point) to an 8-bit unsigned integer format (uint8).
+
+    The image is normalized (subtract the minimum value and scaling by the maximum value to fit it between 0 and 255).
+    It then rounds the values to the nearest integer and casts them to np.uint8.
+    """
     rimg = img - np.min(img)
     rimg = (rimg / np.max(rimg) * 255).round().astype(np.uint8)
     return rimg
@@ -23,6 +30,12 @@ def img_float_to_uint8(img):
 
 # Concatenate an image and its groundtruth
 def concatenate_images(img, gt_img):
+    """
+    Concatenates an image and its ground truth side by side
+    Checks the number of channels in the ground truth image.
+    If the ground truth image is in RGB (3 channels), it concatenates the images horizontally.
+    If the ground truth image is grayscale (1 channel), it converts it to a 3-channel format by duplicating the grayscale values across the 3 channels.
+    """
     nChannels = len(gt_img.shape)
     w = gt_img.shape[0]
     h = gt_img.shape[1]
@@ -40,6 +53,9 @@ def concatenate_images(img, gt_img):
 
 
 def img_crop(im, w, h):
+    """
+    Crops an image into smaller patches of a given width (w) and height (h).
+    """
     list_patches = []
     imgwidth = im.shape[0]
     imgheight = im.shape[1]
