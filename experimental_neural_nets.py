@@ -7,6 +7,11 @@ from torch.nn.functional import relu, tanh, leaky_relu, silu
 
 from torch.utils.data import Dataset
 
+
+def set_seed():
+    torch.manual_seed(0)
+    np.random.seed(0)
+
 class Conv_test(torch.nn.Module):
     """
     A convolutional model with multiple Conv2D and BatchNorm2D layers.
@@ -174,6 +179,7 @@ class OutConv(torch.nn.Module):
         x = torch.squeeze(x)
         x = torch.sigmoid(x)
         return x
+
 
 class UNet(torch.nn.Module):
     """
