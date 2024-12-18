@@ -96,51 +96,57 @@ def connect_edges_to_roads(binary_mask, max_distance=35, max_iterations=40):
         ndarray: Binary mask with connected roads.
     """
     connected_mask = np.zeros_like(binary_mask)
+    connect = True
 
-    skeletons = []
+    while connect:
+        connect = False
+        skeletons = []
 
-    labeled_mask = label(binary_mask | connected_mask)
-    regions = regionprops(labeled_mask)
-    sorted_regions = sorted(regions, key=lambda r: r.area)
+        labeled_mask = label(binary_mask | connected_mask)
+        regions = regionprops(labeled_mask)
+        sorted_regions = sorted(regions, key=lambda r: r.area)
 
-    for region in sorted_regions:
-        region_mask = (labeled_mask == region.label)
-        road_width = estimate_local_width(region_mask, max_iterations)
-        skeleton = skeletonize(region_mask)
-        skeletons.append(skeleton)
+        for region in sorted_regions:
+            region_mask = (labeled_mask == region.label)
+            skeleton = skeletonize(region_mask)
+            skeletons.append(skeleton)
 
-    global_graph = build_global_graph(skeletons)
+        global_graph = build_global_graph(skeletons)
 
-    for region in sorted_regions:
-        region_mask = (labeled_mask == region.label)
-        current_connection = np.zeros_like(binary_mask)
-        skeleton = skeletonize(region_mask)
-        region_graph = build_global_graph([skeleton])
-        rows, cols = np.nonzero(skeleton)
+        for region in sorted_regions:
+            region_mask = (labeled_mask == region.label)
+            road_width = estimate_local_width(region_mask, max_iterations)
+            current_connection = np.zeros_like(binary_mask)
+            skeleton = skeletonize(region_mask)
+            region_graph = build_global_graph([skeleton])
+            rows, cols = np.nonzero(skeleton)
 
-        for r, c in zip(rows, cols):
-            neighbors = list(region_graph.neighbors((r, c)))
-            if len(neighbors) == 1:
-                dist_matrix = cdist([np.array([r, c])], np.array(list(global_graph.nodes())), metric='euclidean')[0]
-                close_pixels = np.array(list(global_graph.nodes()))[dist_matrix <= max_distance]
-                close_pixels = [tuple(pixel) for pixel in close_pixels if tuple(pixel) not in region_graph.nodes()]
+            for r, c in zip(rows, cols):
+                neighbors = list(region_graph.neighbors((r, c)))
+                if len(neighbors) == 1:
+                    dist_matrix = cdist([np.array([r, c])], np.array(list(global_graph.nodes())), metric='euclidean')[0]
+                    close_pixels = np.array(list(global_graph.nodes()))[dist_matrix <= max_distance]
+                    close_pixels = [tuple(pixel) for pixel in close_pixels if tuple(pixel) not in region_graph.nodes()]
 
-                if close_pixels:
-                    closest_pixel = min(close_pixels, key=lambda px: np.linalg.norm(np.array(px) - np.array([r, c])))
-                    rr, cc = line(r, c, closest_pixel[0], closest_pixel[1])
-                    rr = np.clip(rr, 0, connected_mask.shape[0] - 1)
-                    cc = np.clip(cc, 0, connected_mask.shape[1] - 1)
-                    current_connection[rr, cc] = 1
-                    # Smooth the region mask with the connection
-                    current_connection = np.logical_or(skeleton,current_connection)
+                    if close_pixels:
+                        closest_pixel = min(close_pixels, key=lambda px: np.linalg.norm(np.array(px) - np.array([r, c])))
+                        rr, cc = line(r, c, closest_pixel[0], closest_pixel[1])
+                        rr = np.clip(rr, 0, connected_mask.shape[0] - 1)
+                        cc = np.clip(cc, 0, connected_mask.shape[1] - 1)
+                        current_connection[rr, cc] = 1
+                        # Smooth the region mask with the connection
+                        current_connection = np.logical_or(skeleton,current_connection)
+                        connect = True
 
-        road_width = estimate_local_width(region_mask, max_iterations)
-        dilated_region = binary_dilation(current_connection, footprint=square(road_width))
-        connected_mask = np.logical_or(connected_mask, dilated_region)
+            road_width = estimate_local_width(region_mask, max_iterations)
+            dilated_region = binary_dilation(current_connection, footprint=square(road_width))
+            connected_mask = np.logical_or(connected_mask, dilated_region)
+            connected_mask
+            break
 
     return np.logical_or(connected_mask, binary_mask)
 
-def remove_false_positives(binary_mask, min_aspect_ratio=2.5, min_area=400):
+def remove_false_positives(binary_mask, min_aspect_ratio=2.5, min_area=2):
     """
     Remove false positives such as houses, outlier pixels, or small structures.
 
@@ -202,14 +208,20 @@ def process_roads(raw_map, threshold=0.05, outlier_size=50, shape_size=5, min_as
     Returns:
         tuple: Processed binary masks at different stages of refinement.
     """
+    padding = 20
+
     binary_road_map = (raw_map > threshold).astype(np.uint8)
+    binary_road_map = np.pad(binary_road_map, pad_width=padding, mode='constant', constant_values=0)
     cleaned_mask = remove_small_objects(binary_road_map > 0, min_size=outlier_size)
     filled_map = closing(cleaned_mask, square(shape_size))
     filled_map = closing(filled_map, diamond(shape_size))
-    filtered_map = remove_false_positives(filled_map, min_aspect_ratio=min_aspect_ratio)
+    filtered_map_pad = remove_false_positives(filled_map, min_aspect_ratio=min_aspect_ratio)
 
     if connect:
-        connected_map = connect_edges_to_roads(filtered_map, max_distance=max_connection_distance)
+        connected_map_pad = connect_edges_to_roads(filtered_map_pad, max_distance=max_connection_distance)
+        connected_map = connected_map_pad[padding:-padding, padding:-padding]
+    else:
+        filtered_map = filtered_map[padding:-padding, padding:-padding]
 
     if display:
         if connect:
@@ -226,17 +238,17 @@ def process_roads(raw_map, threshold=0.05, outlier_size=50, shape_size=5, min_as
         axes[2].imshow(filled_map, cmap='gray')
         axes[2].set_title("Filled Small Holes")
         axes[2].axis('off')
-        axes[3].imshow(filtered_map, cmap='gray')
+        axes[3].imshow(filtered_map_pad, cmap='gray')
         axes[3].set_title("After False Positive Removal")
         axes[3].axis('off')
         if connect:
-            axes[4].imshow(connected_map, cmap='gray')
+            axes[4].imshow(connected_map_pad, cmap='gray')
             axes[4].set_title("Connected Roads")
             axes[4].axis('off')
         plt.tight_layout()
         plt.show()
     if connect:
-        return connected_map, filtered_map, filled_map, cleaned_mask, binary_road_map
+        return connected_map, filtered_map_pad, filled_map, cleaned_mask, binary_road_map
     else:
         return filtered_map, filled_map, cleaned_mask, binary_road_map
 
