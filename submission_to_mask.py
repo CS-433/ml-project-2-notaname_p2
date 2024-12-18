@@ -1,32 +1,58 @@
 #!/usr/bin/python
 import os
 import sys
-import Image
+from PIL import Image
 import math
 import matplotlib.image as mpimg
 import numpy as np
 
+# File containing labels and predictions
 label_file = 'dummy_submission.csv'
 
-h = 16
-w = h
-imgwidth = int(math.ceil((600.0/w))*w)
-imgheight = int(math.ceil((600.0/h))*h)
-nc = 3
+# Image dimensions and parameters
+h = 16  # Block height
+w = h   # Block width
+imgwidth = int(math.ceil((600.0 / w)) * w)  # Image width (rounded to nearest multiple of w)
+imgheight = int(math.ceil((600.0 / h)) * h)  # Image height (rounded to nearest multiple of h)
+nc = 3  # Number of channels (not used in the current implementation)
 
-# Convert an array of binary labels to a uint8
+
 def binary_to_uint8(img):
+    """
+    Converts a binary array to uint8 format.
+    """
     rimg = (img * 255).round().astype(np.uint8)
     return rimg
 
+
 def reconstruct_from_labels(image_id):
+    """
+    Reconstructs an image from label predictions stored in a CSV file.
+
+    Reads the label file, extracts predictions for the given image ID, and 
+    reconstructs the corresponding binary image. The reconstructed image is 
+    saved as a PNG file.
+
+    Parameters:
+    ----------
+    image_id : int
+        Identifier of the image to reconstruct.
+
+    Returns:
+    -------
+    np.ndarray
+        Reconstructed binary image as a NumPy array.
+    """
+
     im = np.zeros((imgwidth, imgheight), dtype=np.uint8)
-    f = open(label_file)
-    lines = f.readlines()
-    image_id_str = '%.3d_' % image_id
-    for i in range(1, len(lines)):
-        line = lines[i]
-        if not image_id_str in line:
+
+    with open(label_file, 'r') as f:
+        lines = f.readlines()
+
+    image_id_str = f'{image_id:03d}_'
+
+    for line in lines[1:]:  
+        if image_id_str not in line:
             continue
 
         tokens = line.split(',')
@@ -36,19 +62,19 @@ def reconstruct_from_labels(image_id):
         i = int(tokens[1])
         j = int(tokens[2])
 
-        je = min(j+w, imgwidth)
-        ie = min(i+h, imgheight)
+        je = min(j + w, imgwidth)
+        ie = min(i + h, imgheight)
+
         if prediction == 0:
-            adata = np.zeros((w,h))
+            adata = np.zeros((w, h))
         else:
-            adata = np.ones((w,h))
+            adata = np.ones((w, h))
 
         im[j:je, i:ie] = binary_to_uint8(adata)
 
-    Image.fromarray(im).save('prediction_' + '%.3d' % image_id + '.png')
+    output_filename = f'prediction_{image_id:03d}.png'
+    Image.fromarray(im).save(output_filename)
 
     return im
 
-for i in range(1, 5):
-    reconstruct_from_labels(i)
    
