@@ -23,7 +23,8 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
 
    ```bash
    cd YOUR_CLONING_DIRECTORY
-   git clone https://github.com/YOUR_USERNAME/ML_Project2.git
+   git clone https://github.com/CS-433/ml-project-2-notaname_p2
+   cd ml-project-2-notaname_p2
 2. **Get the enviroment and activate it**   
 
    ```bash
