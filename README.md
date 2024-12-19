@@ -15,7 +15,7 @@ Example :
 
 ## How to Run the Code 
 
-You may want to run the code with either run.py or run.ipynb (the latter is more readable in our opinion, the choice is yours).
+You may want to run the code with UNet_pred.ipynb.
 
 1. **Clone the repository**  
    Open your terminal and run the following command to clone this repository:
