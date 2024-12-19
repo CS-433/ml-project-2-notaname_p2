@@ -32,11 +32,11 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
 
 3. **Get pretrained Models**
 
-   You will need to redownload the UNet_model.pth and RC_params_opti.pth files and place them in the project folder. If you don't you might enconter an error stating the files are corrupted.
+   You will need to redownload the UNet_model.pth and RC_params_opti.pth files and place them in the project folder. If you don't you might enconter an error stating the files are corrupted. By using a pretrained model the prediction time would be around 10 minutes, if you want to train the model your self it might take several hours.
 
 4.**Get the best prediction**
    
-   open UNet_pred.ipynb on any editor and run all cells**   
+   open UNet_pred.ipynb on any editor, selected the ML_project2 enviromnent and run all cells
 
   ## Best Prediction and Getting other Predictions
 
