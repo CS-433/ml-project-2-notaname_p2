@@ -24,7 +24,7 @@ You may want to run the code with UNet_pred.ipynb.
    cd YOUR_CLONING_DIRECTORY
    git clone https://github.com/CS-433/ml-project-2-notaname_p2
    cd ml-project-2-notaname_p2
-2. **Get the enviroment and activate it**   
+2. **Get the environment and activate it**   
 
    ```bash
    conda env create -f environment.yml
