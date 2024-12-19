@@ -3,13 +3,12 @@
 
 # Machine Learning Project 2  
 
-The overall goal of this project is to retrieve roads in an aerial/satellite image. 
+The overall goal of this project is perform an image segmentation on aerial/satellite image to find the roads. 
  
 
-### <b>project overview</b>
+### <b>Project overview</b>
 
-This project aims to develop a machine learning model to predict the likelihood of a pixel in an image to be a road or not.
-We will therefore a label to each pixel of a satellite/aerial image (road=1, background=0)
+This project aims to develop a machine learning model to predict the likelihood of a pixel in an image to be a road or not. Based on that prediction we will attribute a label to each pixel of a satellite image. With road beeing set to white and non-road set to black  (road=1, background=0).
 
 Example : 
 
@@ -24,17 +23,22 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
 
    ```bash
    cd YOUR_CLONING_DIRECTORY
-   git clone https://github.com/YOUR_USERNAME/ML_Project2.git
+   git clone https://github.com/CS-433/ml-project-2-notaname_p2
+   cd ml-project-2-notaname_p2
 2. **Get the enviroment and activate it**   
 
    ```bash
    conda env create -f environment.yml
    conda activate ML_project2
 
-3. **Run run.py as follow to get the best prediction or simply open run.ipynb on any editor and run all cells**   
+3. **To get the best prediction open UNet_pred.ipynb on any editor and run all cells**   
 
-   ```bash
-   python run.py
+
+  ## Best Prediction and Getting other Predictions
+
+  To get best prediction that we obtained, run UNet_pred.ipynb with all parameters set to False (already done by default). If you want to predict best parameters (best number of layers/bases,...), set UNET_SEARCH to True. If you want in addition to save them, set both SAVE_UNET and UNET_TRAIN to True. For the hyperparameter search for postprocessing part, set ROAD_CORRECTION_SEARCH to True (to save them set SAVE_RC_PARAMS to True). The last parameter THRESHOLD_SEARCH is for searching optimal threshold to minimize F1 loss. 
+
+
 
 
 ##### Authors: Joana Pires, Leonardo Tredici, Antonin HUDRY
