@@ -31,8 +31,9 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
    conda env create -f environment.yml
    conda activate ML_project2
 
-3. **To get the best prediction open UNet_pred.ipynb on any editor and run all cells**   
-
+3. **Get pretrained Models**
+   You will need to redownload the UNet_model.pth and RC_params_opti.pth files and place them in the project folder. If you don't you might enconter an error stating the files are corrupted.
+5. **To get the best prediction open UNet_pred.ipynb on any editor and run all cells**   
 
   ## Best Prediction and Getting other Predictions
 
