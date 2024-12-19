@@ -20,3 +20,4 @@ dependencies:
       - fsspec
       - jinja2
       - markupsafe
+      - scikit-image
