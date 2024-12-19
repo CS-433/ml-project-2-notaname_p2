@@ -199,6 +199,7 @@ class Up(torch.nn.Module):
         x1 = torch.nn.functional.pad(x1, [diff_x // 2, diff_x - diff_x // 2,
                                           diff_y // 2, diff_y - diff_y // 2])
 
+        x1 = self.conv(x1)
         x = torch.cat([x2, x1], dim=1)
         return self.conv(x)
 
@@ -251,15 +252,19 @@ class UNet(torch.nn.Module):
         self.inc = DoubleConv(n_channels, base_c)
         self.downs = torch.nn.ModuleList()
         in_channels = base_c
-        for _ in range(num_layers):
+        print('down')
+        for i in range(num_layers):
             out_channels = in_channels * 2
             self.downs.append(Down(in_channels, out_channels))
+            print((in_channels,out_channels))
             in_channels = out_channels
 
         self.ups = torch.nn.ModuleList()
-        for _ in range(num_layers):
+        print('Up')
+        for i in range(num_layers):
             out_channels = in_channels // 2
             self.ups.append(Up(in_channels, out_channels))
+            print((in_channels,out_channels))
             in_channels = out_channels
 
         self.outc = OutConv(base_c, 1)

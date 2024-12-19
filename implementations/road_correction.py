@@ -146,7 +146,7 @@ def connect_edges_to_roads(binary_mask, max_distance=35, max_iterations=40):
 
     return np.logical_or(connected_mask, binary_mask)
 
-def remove_false_positives(binary_mask, min_aspect_ratio=2.5, min_area=2):
+def remove_false_positives(binary_mask, min_aspect_ratio=2.5, min_area=400):
     """
     Remove false positives such as houses, outlier pixels, or small structures.
 
@@ -215,7 +215,7 @@ def process_roads(raw_map, threshold=0.05, outlier_size=50, shape_size=5, min_as
     cleaned_mask = remove_small_objects(binary_road_map > 0, min_size=outlier_size)
     filled_map = closing(cleaned_mask, square(shape_size))
     filled_map = closing(filled_map, diamond(shape_size))
-    filtered_map_pad = remove_false_positives(filled_map, min_aspect_ratio=min_aspect_ratio)
+    filtered_map_pad = remove_false_positives(filled_map, min_aspect_ratio=min_aspect_ratio, min_area=2)
 
     if connect:
         connected_map_pad = connect_edges_to_roads(filtered_map_pad, max_distance=max_connection_distance)
