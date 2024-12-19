@@ -3,13 +3,12 @@
 
 # Machine Learning Project 2  
 
-The overall goal of this project is to retrieve roads in an aerial/satellite image. 
+The overall goal of this project is perform an image segmentation on aerial/satellite image to find the roads. 
  
 
-### <b>project overview</b>
+### <b>Project overview</b>
 
-This project aims to develop a machine learning model to predict the likelihood of a pixel in an image to be a road or not.
-We will therefore a label to each pixel of a satellite/aerial image (road=1, background=0)
+This project aims to develop a machine learning model to predict the likelihood of a pixel in an image to be a road or not. Based on that prediction we will attribute a label to each pixel of a satellite image. With road beeing set to white and non-road set to black  (road=1, background=0).
 
 Example : 
 
@@ -31,10 +30,8 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
    conda env create -f environment.yml
    conda activate ML_project2
 
-3. **Run run.py as follow to get the best prediction or simply open run.ipynb on any editor and run all cells**   
+3. **To get the best prediction open UNet_pred.ipynb on any editor and run all cells**   
 
-   ```bash
-   python run.py
 
   ## Best Prediction and Getting other Predictions
 
