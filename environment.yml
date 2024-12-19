@@ -1,0 +1,22 @@
+name: ML_project2
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - scipy
+  - pillow
+  - ipython
+  - jupyter
+  - pip
+  - pip:
+      - torch==2.5.1
+      - sympy
+      - filelock
+      - fsspec
+      - jinja2
+      - markupsafe
