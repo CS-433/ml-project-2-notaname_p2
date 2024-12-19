@@ -36,5 +36,11 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
    ```bash
    python run.py
 
+  ## Best Prediction and Getting other Predictions
+
+  To get best prediction that we obtained, run UNet_pred.ipynb with all parameters set to False (already done by default). If you want to predict best parameters (best number of layers/bases,...), set UNET_SEARCH to True. If you want in addition to save them, set both SAVE_UNET and UNET_TRAIN to True. For the hyperparameter search for postprocessing part, set ROAD_CORRECTION_SEARCH to True (to save them set SAVE_RC_PARAMS to True). The last parameter THRESHOLD_SEARCH is for searching optimal threshold to minimize F1 loss. 
+
+
+
 
 ##### Authors: Joana Pires, Leonardo Tredici, Antonin HUDRY
