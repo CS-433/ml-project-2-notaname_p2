@@ -33,13 +33,20 @@ You may want to run the code with either run.py or run.ipynb (the latter is more
 3. **Get pretrained Models**
 
    You will need to redownload the UNet_model.pth and RC_params_opti.pth files and place them in the project folder. If you don't you might enconter an error stating the files are corrupted.
-5. **Get the best prediction
+
+4.**Get the best prediction**
    
    open UNet_pred.ipynb on any editor and run all cells**   
 
   ## Best Prediction and Getting other Predictions
 
-  To get best prediction that we obtained, run UNet_pred.ipynb with all parameters set to False (already done by default). If you want to predict best parameters (best number of layers/bases,...), set UNET_SEARCH to True. If you want in addition to save them, set both SAVE_UNET and UNET_TRAIN to True. For the hyperparameter search for postprocessing part, set ROAD_CORRECTION_SEARCH to True (to save them set SAVE_RC_PARAMS to True). The last parameter THRESHOLD_SEARCH is for searching optimal threshold to minimize F1 loss. 
+  To get best prediction that we obtained, run UNet_pred.ipynb with all parameters set to False (already done by default). 
+  
+  If you want to predict best parameters (best number of layers/bases,...), set UNET_SEARCH to True. 
+  
+  If you want in addition to save them, set both SAVE_UNET and UNET_TRAIN to True. For the hyperparameter search for postprocessing part, set ROAD_CORRECTION_SEARCH to True (to save them set SAVE_RC_PARAMS to True).
+  
+  The last parameter THRESHOLD_SEARCH is for searching optimal threshold to minimize F1 loss. 
 
 
 
